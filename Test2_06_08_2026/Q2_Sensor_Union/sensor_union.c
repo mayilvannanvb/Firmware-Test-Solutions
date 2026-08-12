@@ -1,47 +1,30 @@
-/*
- * Question 2: Sensor Information System using Union
- *
- * Models an embedded sensor using struct + union.
- * Union stores EITHER an integer OR float reading (not both).
- * Demonstrates pass-by-value vs pass-by-pointer for union.
- *
- * Compile : gcc sensor_union.c -o sensor
- * Run     : ./sensor
- *
- * Concepts: Union, Struct, Function args, Pointer to union,
- *           Pass-by-value vs pass-by-reference, Memory sharing
- */
+
 
 #include <stdio.h>
 #include <string.h>
 
 #define NAME_LEN 32
 
-/* ── Reading type tag ────────────────────────────────────────── */
 typedef enum { INT_READING = 1, FLOAT_READING = 2 } ReadingType;
 
-/* ── Union: one memory, two types ───────────────────────────── */
 typedef union {
     int   int_val;
     float float_val;
 } SensorValue;
 
-/* ── Sensor structure ────────────────────────────────────────── */
 typedef struct {
     int         id;
     char        name[NAME_LEN];
-    ReadingType type;         /* which union field is valid */
+    ReadingType type;         
     SensorValue value;
 } Sensor;
 
-/* ── Function prototypes ─────────────────────────────────────── */
 void readSensor   (Sensor *s);
-void displaySensor(Sensor  s);          /* pass by value  */
-void updateSensor (Sensor *s);          /* pass by pointer */
+void displaySensor(Sensor  s);          
+void updateSensor (Sensor *s);          
 void compareSensor(Sensor  a, Sensor b);
 void resetSensor  (Sensor *s);
 
-/* ── readSensor(): fill sensor details from user ─────────────── */
 void readSensor(Sensor *s)
 {
     printf("Enter Sensor ID   : "); scanf("%d", &s->id);
@@ -59,7 +42,6 @@ void readSensor(Sensor *s)
     }
 }
 
-/* ── displaySensor(): pass by VALUE (copy — changes don't affect original) */
 void displaySensor(Sensor s)
 {
     printf("\n--- Sensor Details ---\n");
@@ -71,7 +53,6 @@ void displaySensor(Sensor s)
         printf("Reading : %d (int)\n", s.value.int_val);
 }
 
-/* ── updateSensor(): pass by POINTER (modifies original) ─────── */
 void updateSensor(Sensor *s)
 {
     printf("\nUpdating Reading...\n");
@@ -84,14 +65,12 @@ void updateSensor(Sensor *s)
     }
 }
 
-/* ── compareSensor(): compare two sensors ─────────────────────── */
 void compareSensor(Sensor a, Sensor b)
 {
     printf("\n--- Sensor Comparison ---\n");
     printf("Sensor A: %s (ID=%d)\n", a.name, a.id);
     printf("Sensor B: %s (ID=%d)\n", b.name, b.id);
 
-    /* Compare only if both have same reading type */
     if (a.type != b.type) {
         printf("Cannot compare: different reading types\n");
         return;
@@ -116,7 +95,6 @@ void compareSensor(Sensor a, Sensor b)
     }
 }
 
-/* ── resetSensor(): zero out everything ──────────────────────── */
 void resetSensor(Sensor *s)
 {
     s->id            = 0;
