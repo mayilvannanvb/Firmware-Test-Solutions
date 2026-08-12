@@ -1,16 +1,3 @@
-/*
- * Question 3: Buddy Memory Allocation Algorithm
- *
- * Total Memory = 1024 KB. Blocks are powers of 2.
- * Supports: Allocate, Free, Display, Statistics.
- *
- * Compile: gcc buddy_memory.c -o buddy -lm
- * Run    : ./buddy
- *
- * Concepts: Memory Management, Power-of-2, Splitting, Merging,
- *           Internal Fragmentation, Buddy System
- */
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -32,8 +19,6 @@ int   block_count    = 0;
 int   failed_allocs  = 0;
 int   total_alloc    = 0;
 int   internal_frag  = 0;
-
-/* Next power of 2 >= n */
 int nextPow2(int n)
 {
     int p = 1;
@@ -50,8 +35,6 @@ void initializeMemory(void)
     strcpy(memory[0].pid, "FREE");
     printf("Memory initialized: %d KB\n", TOTAL_MEM);
 }
-
-/* Split block[idx] into two equal buddies */
 void splitBlock(int idx)
 {
     int half = memory[idx].size / 2;
@@ -74,8 +57,6 @@ void allocateMemory(void)
     printf("Enter Size (KB)  : "); scanf("%d", &req);
 
     int needed = nextPow2(req);
-
-    /* Find smallest free block >= needed */
     int found = -1;
     for (int i = 0; i < block_count; i++) {
         if (!memory[i].allocated && memory[i].size >= needed)
@@ -88,8 +69,6 @@ void allocateMemory(void)
         failed_allocs++;
         return;
     }
-
-    /* Split until exact fit */
     while (memory[found].size > needed)
         splitBlock(found);
 
@@ -103,8 +82,6 @@ void allocateMemory(void)
     printf("Allocated %d KB to %s (req=%d KB, frag=%d KB)\n",
            needed, pid, req, frag);
 }
-
-/* Merge adjacent free buddies recursively */
 void mergeBuddy(void)
 {
     int merged = 1;
