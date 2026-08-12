@@ -1,21 +1,3 @@
-/*
- * Question 4: Simple Linux Character Device Driver
- *
- * Device : /dev/mychardev
- * Ops    : open, read, write, release
- *
- * Build  : make
- * Load   : sudo insmod mychardev.ko
- * Test   : echo "Hello Driver" > /dev/mychardev && cat /dev/mychardev
- * Remove : sudo rmmod mychardev
- *
- * Concepts: Kernel Module, file_operations, copy_to_user,
- *           copy_from_user, printk, device registration
- *
- * NOTE: Requires Linux kernel headers.
- *       sudo apt install linux-headers-$(uname -r)
- */
-
 #include <linux/module.h>
 #include <linux/kernel.h>
 #include <linux/fs.h>
@@ -38,22 +20,16 @@ static char           kernel_buffer[BUF_SIZE] = {0};
 static int            buf_len = 0;
 static struct class  *mychar_class  = NULL;
 static struct device *mychar_device = NULL;
-
-/* open() - called when user opens /dev/mychardev */
 static int dev_open(struct inode *inodep, struct file *filep)
 {
     printk(KERN_INFO "mychardev: Device Opened\n");
     return 0;
 }
-
-/* release() - called when user closes the device */
 static int dev_release(struct inode *inodep, struct file *filep)
 {
     printk(KERN_INFO "mychardev: Device Closed\n");
     return 0;
 }
-
-/* read() - sends kernel_buffer data to user space */
 static ssize_t dev_read(struct file *filep, char __user *user_buf,
                          size_t len, loff_t *offset)
 {
@@ -68,8 +44,6 @@ static ssize_t dev_read(struct file *filep, char __user *user_buf,
     printk(KERN_INFO "mychardev: Data Read - %d bytes\n", to_read);
     return to_read;
 }
-
-/* write() - receives data from user space into kernel_buffer */
 static ssize_t dev_write(struct file *filep, const char __user *user_buf,
                           size_t len, loff_t *offset)
 {
@@ -94,22 +68,17 @@ static struct file_operations fops = {
 
 static int __init mychardev_init(void)
 {
-    /* Step 1: Register char device — kernel assigns major number */
     major_number = register_chrdev(0, DEVICE_NAME, &fops);
     if (major_number < 0) {
         printk(KERN_ALERT "mychardev: register failed (%d)\n", major_number);
         return major_number;
     }
     printk(KERN_INFO "mychardev: registered, major = %d\n", major_number);
-
-    /* Step 2: Create /sys/class/mychar_class */
     mychar_class = class_create(THIS_MODULE, CLASS_NAME);
     if (IS_ERR(mychar_class)) {
         unregister_chrdev(major_number, DEVICE_NAME);
         return PTR_ERR(mychar_class);
     }
-
-    /* Step 3: Create /dev/mychardev via udev */
     mychar_device = device_create(mychar_class, NULL,
                                    MKDEV(major_number, 0),
                                    NULL, DEVICE_NAME);
