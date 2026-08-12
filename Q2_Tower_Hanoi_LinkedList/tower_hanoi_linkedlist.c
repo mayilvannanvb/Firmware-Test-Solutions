@@ -1,31 +1,14 @@
-/*
- * Question 2: Tower of Hanoi using Linked List Stack
- *
- * Each rod is a stack (linked list).
- * Displays all rod states after every move.
- *
- * Compile: gcc tower_hanoi_linkedlist.c -o hanoi_ll
- * Run    : ./hanoi_ll
- *
- * Concepts: Linked List, Stack ADT, Dynamic Memory, Recursion
- */
 
 #include <stdio.h>
 #include <stdlib.h>
-
-/* ── Node ─────────────────────────────────────────────────── */
 typedef struct Node {
     int          data;
     struct Node *next;
 } Node;
-
-/* ── Stack (represents one rod) ───────────────────────────── */
 typedef struct {
     Node *top;
     char  name;
 } Stack;
-
-/* ── Stack operations ─────────────────────────────────────── */
 Stack *createStack(char name)
 {
     Stack *s = (Stack *)malloc(sizeof(Stack));
@@ -59,20 +42,16 @@ void displayStack(Stack *s)
         printf("%d ", cur->data);
     printf("\n");
 }
-
-/* ── Move one disk and display all rods ───────────────────── */
 void moveDisk(Stack *src, Stack *dest, Stack *other)
 {
     int disk = pop(src);
     push(dest, disk);
     printf("\nMove Disk %d from %c to %c\n", disk, src->name, dest->name);
-    /* show state of all three rods — caller passes the third */
     displayStack(src);
     displayStack(dest);
     displayStack(other);
 }
 
-/* ── Recursive Hanoi ──────────────────────────────────────── */
 void towerOfHanoi(int n, Stack *src, Stack *aux, Stack *dest)
 {
     if (n == 0) return;
@@ -91,7 +70,6 @@ int main(void)
     Stack *B = createStack('B');
     Stack *C = createStack('C');
 
-    /* Push disks largest -> smallest into A */
     for (int i = n; i >= 1; i--)
         push(A, i);
 
@@ -106,6 +84,7 @@ int main(void)
     displayStack(A);
     displayStack(B);
     displayStack(C);
+}
 
     free(A); free(B); free(C);
     return 0;
